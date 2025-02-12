@@ -12,6 +12,8 @@ The Api is Deployed on:
 - Nginx as a reverse proxy
 - Continuous Deployment using GitHub Actions
 
+The app is acessible at
+
 ## Features
 
 - 📚 Book management (CRUD operations)
