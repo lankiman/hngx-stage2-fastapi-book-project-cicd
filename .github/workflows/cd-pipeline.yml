@@ -24,7 +24,7 @@ jobs:
         run: |
           # Setup SSH Key
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY_BASE64" | base64 --decode > ~/.ssh/id_rsa
+          echo "$SSH_PRIVATE_KEY" | base64 --decode > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
 
