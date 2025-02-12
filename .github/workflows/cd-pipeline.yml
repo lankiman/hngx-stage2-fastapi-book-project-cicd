@@ -26,7 +26,7 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST '\
-          cd ~/fastapi-book-project && \
+          cd ~/hngx-stage2-fastapi-book-project-cicd && \
           git pull origin main && \
           pkill -f "uvicorn main:app" || true && \
           source venv/bin/activate && \
