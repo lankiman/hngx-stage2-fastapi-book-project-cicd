@@ -25,7 +25,9 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST '\
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_rsa
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST '\
           if [ ! -d "~/hngx-stage2-fastapi-book-project-cicd" ]; then \
             git clone https://github.com/lankiman/hngx-stage2-fastapi-book-project-cicd.git && \
             cd hngx-stage2-fastapi-book-project-cicd && \
