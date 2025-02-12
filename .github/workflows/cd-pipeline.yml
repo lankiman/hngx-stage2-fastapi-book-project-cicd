@@ -22,22 +22,31 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
+          # Setup SSH
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          eval "$(ssh-agent -s)"
-          ssh-add ~/.ssh/id_rsa
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST '\
-          if [ ! -d "~/hngx-stage2-fastapi-book-project-cicd" ]; then \
-            git clone https://github.com/lankiman/hngx-stage2-fastapi-book-project-cicd.git && \
-            cd hngx-stage2-fastapi-book-project-cicd && \
-            python3 -m venv venv && \
-            source venv/bin/activate && \
-            pip install -r requirements.txt; \
-          else \
-            cd ~/hngx-stage2-fastapi-book-project-cicd && \
-            git pull origin main; \
-          fi && \
-          pkill -f "uvicorn main:app" || true && \
-          source venv/bin/activate && \
-          nohup uvicorn main:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &'
+
+          # Connect to the server and deploy
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
+            set -e
+
+            # Clone repo if not exists, else pull latest changes
+            if [ ! -d "$HOME/hngx-stage2-fastapi-book-project-cicd" ]; then
+              git clone https://github.com/lankiman/hngx-stage2-fastapi-book-project-cicd.git
+            fi
+            
+            cd hngx-stage2-fastapi-book-project-cicd
+
+            # Update repo
+            git pull origin main
+
+            # Ensure Python and dependencies are installed
+            python3 -m venv venv
+            source venv/bin/activate
+            pip install -r requirements.txt
+
+            # Restart the FastAPI application
+            pkill -f "uvicorn main:app" || true
+            nohup uvicorn main:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &
+          EOF
