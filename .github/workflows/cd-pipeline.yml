@@ -11,7 +11,7 @@ jobs:
   deploy:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -22,13 +22,12 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          # Setup SSH
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          # Write the private key to a file
+          echo "$SSH_PRIVATE_KEY" > id_rsa
+          chmod 600 id_rsa
 
           # Connect to the server and deploy
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
+          ssh -i id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa $SSH_USER@$SSH_HOST << 'EOF'
             set -e
 
             # Clone repo if not exists, else pull latest changes
@@ -50,3 +49,6 @@ jobs:
             pkill -f "uvicorn main:app" || true
             nohup uvicorn main:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &
           EOF
+
+          # Clean up the private key file
+          rm -f id_rsa
