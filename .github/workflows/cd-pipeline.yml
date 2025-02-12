@@ -24,11 +24,16 @@ jobs:
         run: |
           # Create SSH key file properly
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          # Fix key formatting and write it to a file
+          echo "$SSH_PRIVATE_KEY" | sed 's/\r$//' > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
 
-          # Connect to the server and deploy
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
+          # Add the key to the agent to avoid direct loading issues
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/deploy_key
+
+          # Deploy using SSH
+          ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
             set -e
 
             # Clone repo if not exists, else pull latest changes
