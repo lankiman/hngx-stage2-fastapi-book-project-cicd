@@ -2,7 +2,15 @@
 
 ## Overview
 
-This project is a RESTful API built with FastAPI for managing a book collection. It provides comprehensive CRUD (Create, Read, Update, Delete) operations for books with proper error handling, input validation, and documentation.
+This project is my implementation of the HNGx Stage 2 task, based on a fork of the FastAPI Book Project template. It's a RESTful API built with FastAPI for managing a book collection, featuring comprehensive CRUD operations, proper error handling, input validation, and documentation.
+
+## Deployment
+
+The Api is Deployed on:
+
+- Amazon EC2 instance
+- Nginx as a reverse proxy
+- Continuous Deployment using GitHub Actions
 
 ## Features
 
@@ -128,14 +136,6 @@ The API includes proper error handling for:
 - Invalid book IDs
 - Invalid genre types
 - Malformed requests
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 ## License
 
