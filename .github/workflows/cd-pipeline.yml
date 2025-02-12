@@ -40,7 +40,8 @@ jobs:
             cd hngx-stage2-fastapi-book-project-cicd
 
             # Update repo
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
 
             # Ensure Python and dependencies are installed
             python3 -m venv venv
