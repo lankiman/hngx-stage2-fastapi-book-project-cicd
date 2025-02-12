@@ -22,13 +22,8 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          # Setup SSH
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-
           # Connect to the server and deploy
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
+          ssh -i "$SSH_PRIVATE_KEY" -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
             set -e
 
             # Clone repo if not exists, else pull latest changes
