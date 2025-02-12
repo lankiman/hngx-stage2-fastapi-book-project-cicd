@@ -12,7 +12,7 @@ The Api is Deployed on:
 - Nginx as a reverse proxy
 - Continuous Deployment using GitHub Actions
 
-The app is acessible at [](https://google.com)
+The app is accessible at [hngx-stage-2-fastapi](http://ec2-18-207-186-104.compute-1.amazonaws.com)
 
 ## Features
 
