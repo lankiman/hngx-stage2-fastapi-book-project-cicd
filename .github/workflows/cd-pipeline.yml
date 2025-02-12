@@ -26,8 +26,16 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST '\
-          cd ~/hngx-stage2-fastapi-book-project-cicd && \
-          git pull origin main && \
+          if [ ! -d "~/hngx-stage2-fastapi-book-project-cicd" ]; then \
+            git clone https://github.com/lankiman/hngx-stage2-fastapi-book-project-cicd.git && \
+            cd hngx-stage2-fastapi-book-project-cicd && \
+            python3 -m venv venv && \
+            source venv/bin/activate && \
+            pip install -r requirements.txt; \
+          else \
+            cd ~/hngx-stage2-fastapi-book-project-cicd && \
+            git pull origin main; \
+          fi && \
           pkill -f "uvicorn main:app" || true && \
           source venv/bin/activate && \
           nohup uvicorn main:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &'
