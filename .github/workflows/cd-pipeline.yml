@@ -16,24 +16,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Deploy to server
+      - name: Deploy to Server
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          # Create SSH key file properly
+          # Setup SSH Key
           mkdir -p ~/.ssh
-          # Fix key formatting and write it to a file
-          echo "$SSH_PRIVATE_KEY" | sed 's/\r$//' > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
+          echo "$SSH_PRIVATE_KEY_BASE64" | base64 --decode > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
 
-          # Add the key to the agent to avoid direct loading issues
-          eval "$(ssh-agent -s)"
-          ssh-add ~/.ssh/deploy_key
-
-          # Deploy using SSH
-          ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
+          # SSH into the server and deploy
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
             set -e
 
             # Clone repo if not exists, else pull latest changes
@@ -55,6 +51,3 @@ jobs:
             pkill -f "uvicorn main:app" || true
             nohup uvicorn main:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &
           EOF
-
-          # Clean up the private key file
-          rm -f id_rsa
