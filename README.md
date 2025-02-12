@@ -12,7 +12,7 @@ The Api is Deployed on:
 - Nginx as a reverse proxy
 - Continuous Deployment using GitHub Actions
 
-The app is acessible at []()
+The app is acessible at [](https://google.com)
 
 ## Features
 
